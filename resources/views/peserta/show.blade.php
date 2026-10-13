@@ -3,15 +3,22 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-6">
+        {{-- // Kotak kartu untuk membungkus detail informasi peserta --}}
         <div class="card border-0 shadow-sm rounded-4">
+            {{-- // Bagian kepala kartu (header) dengan tema warna biru --}}
             <div class="card-header card-header-blue py-3 rounded-top-4">
                 <h5 class="mb-0">Detail Informasi Peserta</h5>
             </div>
             <div class="card-body p-4">
+                {{-- // Tabel untuk merapikan baris detail data peserta --}}
                 <table class="table table-borderless">
                     <tr>
-                        <th width="40%">No. Pendaftaran</th>
-                        <td>: {{ $peserta->no_pendaftaran }}</td>
+                        <th width="40%">No. Peserta</th>
+                        <td>: {{ $peserta->no_peserta ?? $peserta->no_pendaftaran }}</td>
+                    </tr>
+                    <tr>
+                        <th>NIK</th>
+                        <td>: {{ $peserta->nik ?? '-' }}</td>
                     </tr>
                     <tr>
                         <th>Nama Peserta</th>
@@ -38,6 +45,7 @@
                         <td>: {{ $peserta->alamat }}</td>
                     </tr>
                 </table>
+                {{-- // Tombol kembali ke halaman indeks daftar peserta --}}
                 <a href="{{ route('peserta.index') }}" class="btn btn-secondary w-100">Kembali ke Daftar Peserta</a>
             </div>
         </div>

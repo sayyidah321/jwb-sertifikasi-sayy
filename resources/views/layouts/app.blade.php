@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    {{-- // Konfigurasi meta dasar, judul halaman, dan link CDN Bootstrap & Font --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sertifikasi Sayyidah - Junior Web Developer</title>
@@ -110,17 +111,20 @@
     </style>
 </head>
 <body>
-    @if(!request()->routeIs('login'))
-        @auth
+    {{-- // Navbar HANYA MUNCUL jika user sudah login DAN sedang tidak di halaman utama/login --}}
+    @auth
+        @if(!request()->routeIs('welcome') && !request()->routeIs('login') && !request()->request->has('home'))
         <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
             <div class="container">
+                {{-- // Judul Brand Dinamis Sesuai Role --}}
                 <a class="navbar-brand" href="{{ route('dashboard') }}">
-                    Aplikasi Sertifikasi JWD Sayyidah
+                    {{ Auth::user()->role === 'admin' ? 'Aplikasi Sertifikasi JWD Sayyidah' : 'Aplikasi Sertifikasi' }}
                 </a>
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
+                    {{-- // Menu Utama di Tengah/Kiri --}}
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item">
                             <a class="nav-link px-3" href="{{ route('dashboard') }}">Dashboard</a>
@@ -132,17 +136,26 @@
                             <a class="nav-link px-3" href="{{ route('peserta.index') }}">Data Peserta</a>
                         </li>
                     </ul>
-                    <form action="{{ route('logout') }}" method="POST" class="d-flex">
-                        @csrf
-                        <button class="btn btn-outline-custom btn-sm px-3 py-2 rounded-3" type="submit">Logout</button>
-                    </form>
+
+                    {{-- // Bagian Kanan: Label Role Dinamis dan Tombol Logout --}}
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fw-bold text-dark px-3 py-1 rounded" style="background-color: rgba(255, 255, 255, 0.4); font-size: 14px;">
+                            {{ Auth::user()->role === 'admin' ? 'Administrator' : 'User' }}
+                        </span>
+                        <form action="{{ route('logout') }}" method="POST" class="d-flex m-0">
+                            @csrf
+                            <button class="btn btn-outline-custom btn-sm px-3 py-2 rounded-3" type="submit">Logout</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </nav>
-        @endauth
-    @endif
+        @endif
+    @endauth
 
+    {{-- // Container utama untuk menampung konten halaman dan flash message --}}
     <div class="container my-4 my-md-5">
+        {{-- // Pengecekan session flash success jika ada notifikasi berhasil --}}
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-sm mb-4" role="alert" style="background-color: #ecfdf5; color: #047857;">
                 <strong>Berhasil!</strong> {{ session('success') }}
@@ -150,9 +163,11 @@
             </div>
         @endif
 
+        {{-- // Menampilkan konten dinamis dari setiap view yang menggunakan layout ini --}}
         @yield('content')
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.js"></script>
+    {{-- // Script JavaScript Bootstrap Bundle --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

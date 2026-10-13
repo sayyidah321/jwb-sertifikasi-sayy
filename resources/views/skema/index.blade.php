@@ -3,7 +3,11 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold">Data Skema Sertifikasi</h4>
-    <a href="{{ route('skema.create') }}" class="btn btn-pink rounded-3">+ Tambah Skema</a>
+
+    {{-- Tombol Tambah Skema HANYA MUNCUL untuk Admin --}}
+    @if(Auth::check() && Auth::user()->role === 'admin')
+        <a href="{{ route('skema.create') }}" class="btn btn-pink rounded-3">+ Tambah Skema</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-4">
@@ -16,7 +20,11 @@
                     <th>Nama Skema</th>
                     <th>Jenis Skema</th>
                     <th>Jumlah Unit</th>
-                    <th class="text-center">Aksi</th>
+
+                    {{-- Kolom Aksi HANYA MUNCUL untuk Admin --}}
+                    @if(Auth::check() && Auth::user()->role === 'admin')
+                        <th class="text-center">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -27,18 +35,22 @@
                     <td>{{ $s->nama_skema }}</td>
                     <td>{{ $s->jenis_skema }}</td>
                     <td>{{ $s->jumlah_unit }} Unit</td>
-                    <td class="text-center">
-                        <a href="{{ route('skema.edit', $s->id) }}" class="btn btn-warning btn-sm text-dark">Edit</a>
-                        <form action="{{ route('skema.destroy', $s->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Menghapus skema akan menghapus peserta terkait!')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                        </form>
-                    </td>
+
+                    {{-- Tombol Edit & Hapus HANYA MUNCUL untuk Admin --}}
+                    @if(Auth::check() && Auth::user()->role === 'admin')
+                        <td class="text-center">
+                            <a href="{{ route('skema.edit', $s->id) }}" class="btn btn-warning btn-sm text-dark">Edit</a>
+                            <form action="{{ route('skema.destroy', $s->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Menghapus skema akan menghapus peserta terkait!')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                        </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center py-3">Belum ada skema sertifikasi.</td>
+                    <td colspan="{{ (Auth::check() && Auth::user()->role === 'admin') ? 6 : 5 }}" class="text-center py-3">Belum ada skema sertifikasi.</td>
                 </tr>
                 @endforelse
             </tbody>

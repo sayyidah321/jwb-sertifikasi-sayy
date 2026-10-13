@@ -1,11 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+{{-- // Kotak Sambutan / Hero Section Dashboard --}}
 <div class="p-4 mb-4 bg-light border rounded-1">
     <h3 class="fw-bold text-dark">Selamat Datang di Portal Pengelolaan Sertifikasi</h3>
     <p class="mb-0 text-secondary">Kelola data skema dan pendaftaran peserta sertifikasi profesi secara terstruktur.</p>
 </div>
 
+{{-- // Kotak Statistik Ringkasan (Total Skema & Total Peserta) --}}
 <div class="row g-3 mb-4">
     <div class="col-md-6">
         <div class="card border rounded-1 p-3">
@@ -21,36 +23,39 @@
     </div>
 </div>
 
-<div class="card border rounded-1">
-    <div class="card-header bg-light border-bottom py-3">
-        <h6 class="mb-0 fw-bold text-dark">Peserta Terdaftar Terbaru</h6>
-    </div>
-    <div class="card-body p-0">
+{{-- // Tabel Daftar Peserta Terdaftar Terbaru --}}
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">Peserta Terdaftar Terbaru</h5>
         <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead class="table-light">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
                     <tr>
-                        <th>No. Pendaftaran</th>
+                        <th>No. Peserta / NIK</th>
                         <th>Nama Peserta</th>
                         <th>Skema</th>
                         <th>No. HP</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($pesertaTerbaru as $p)
+                    {{-- // Melakukan perulangan data peserta terbaru --}}
+                    @forelse($pesertaTerbaru ?? $pesertas as $p)
                     <tr>
-                        <td>{{ $p->no_pendaftaran }}</td>
+                        <td>
+                            <div class="fw-bold">{{ $p->no_peserta ?? $p->no_pendaftaran }}</div>
+                            <small class="text-muted">{{ $p->nik ?? '-' }}</small>
+                        </td>
                         <td>{{ $p->nama_peserta }}</td>
                         <td>
-                            <span class="badge bg-secondary font-monospace">{{ $p->skema->nama_skema ?? '-' }}</span>
+                            <span class="badge">{{ $p->skema->nama_skema ?? '-' }}</span>
                         </td>
                         <td>{{ $p->no_hp }}</td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="text-center py-3 text-muted">Belum ada data peserta.</td>
+                        <td colspan="4" class="text-center text-muted py-3">Belum ada data peserta.</td>
                     </tr>
-                    @endempty
+                    @endforelse
                 </tbody>
             </table>
         </div>

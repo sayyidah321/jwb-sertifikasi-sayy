@@ -1,16 +1,20 @@
 @extends('layouts.app')
 
 @section('content')
+{{-- // Bagian Header: Judul Halaman dan Tombol Tambah Peserta Khusus Admin --}}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold">Data Peserta Sertifikasi Sayyidah</h4>
-    <a href="{{ route('peserta.create') }}" class="btn btn-pink rounded-3">+ Tambah Peserta</a>
+    @if(Auth::check() && Auth::user()->role === 'admin')
+        <a href="{{ route('peserta.create') }}" class="btn btn-pink rounded-3">+ Tambah Peserta</a>
+    @endif
 </div>
 
+{{-- // Kotak Form Pencarian Data Peserta --}}
 <div class="card border-0 shadow-sm rounded-4 mb-3">
     <div class="card-body">
         <form action="{{ route('peserta.index') }}" method="GET" class="row g-2">
             <div class="col-md-10">
-                <input type="text" name="search" class="form-control" placeholder="Cari Berdasarkan Nama / No. Pendaftaran" value="{{ $search }}">
+                <input type="text" name="search" class="form-control" placeholder="Cari nomor, NIK, nama, atau email" value="{{ $search ?? '' }}">
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-blue w-100">Cari</button>
@@ -19,6 +23,7 @@
     </div>
 </div>
 
+{{-- // Tabel Daftar Peserta Sertifikasi --}}
 <div class="card border-0 shadow-sm rounded-4">
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -26,7 +31,7 @@
                 <thead class="card-header-blue">
                     <tr>
                         <th>No</th>
-                        <th>No. Pendaftaran</th>
+                        <th>No peserta / NIK</th>
                         <th>Nama Peserta</th>
                         <th>L/P</th>
                         <th>Skema Sertifikasi</th>
@@ -35,22 +40,31 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{-- // Melakukan perulangan data peserta (pagination) --}}
                     @forelse($pesertas as $index => $p)
                     <tr>
                         <td>{{ $pesertas->firstItem() + $index }}</td>
-                        <td>{{ $p->no_pendaftaran }}</td>
+                        <td>
+                            <div class="fw-bold">{{ $p->no_peserta ?? $p->no_pendaftaran }}</div>
+                            <small class="text-muted">{{ $p->nik ?? '-' }}</small>
+                        </td>
                         <td>{{ $p->nama_peserta }}</td>
                         <td>{{ $p->jenis_kelamin }}</td>
-                        <td><span class="badge btn-blue">{{ $p->skema->nama_skema }}</span></td>
+                        <td><span class="badge btn-blue">{{ $p->skema->nama_skema ?? '-' }}</span></td>
                         <td>{{ $p->no_hp }}</td>
                         <td class="text-center">
+                            {{-- // Tombol Detail dapat diakses oleh semua user --}}
                             <a href="{{ route('peserta.show', $p->id) }}" class="btn btn-info btn-sm text-white">Detail</a>
-                            <a href="{{ route('peserta.edit', $p->id) }}" class="btn btn-warning btn-sm text-dark">Edit</a>
-                            <form action="{{ route('peserta.destroy', $p->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
+
+                            {{-- // Tombol Edit dan Hapus dibatasi hanya untuk Administrator --}}
+                            @if(Auth::check() && Auth::user()->role === 'admin')
+                                <a href="{{ route('peserta.edit', $p->id) }}" class="btn btn-warning btn-sm text-dark">Edit</a>
+                                <form action="{{ route('peserta.destroy', $p->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -64,6 +78,7 @@
     </div>
 </div>
 
+{{-- // Navigasi Paginasi Halaman --}}
 <div class="mt-3">
     {{ $pesertas->links() }}
 </div>
