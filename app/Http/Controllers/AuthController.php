@@ -21,15 +21,20 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        // Mengecek kecocokan email dan password dengan database
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Admin maupun User sama-sama diizinkan masuk ke dashboard
+            $user = Auth::user();
+
+            // CEK ROLE: Jika user adalah 'user', arahkan ke dashboard user
+            if (isset($user->role) && $user->role === 'user') {
+                return redirect()->intended('/user-dashboard');
+            }
+
+            // Jika admin, arahkan ke dashboard admin
             return redirect()->intended('/dashboard');
         }
 
-        // Mengembalikan pesan error jika login gagal
         return back()->withErrors(['email' => 'Email atau Password salah!']);
     }
 
@@ -56,7 +61,7 @@ class AuthController extends Controller
         ]);
 
         // Mengarahkan kembali ke halaman login setelah registrasi sukses
-        return redirect()->route('login')->with('success', 'Registrasi Berhasil! Silakan Login.');
+        return redirect()->route('user.login')->with('success', 'Registrasi berhasil! Silakan login menggunakan akun yang baru dibuat.');
     }
 
     // Menangani proses keluar (logout) dan menghapus session aktif

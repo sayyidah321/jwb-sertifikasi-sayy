@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    {{-- // Konfigurasi meta dasar, judul halaman, dan link CDN Bootstrap & Font --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sertifikasi Sayyidah - Junior Web Developer</title>
@@ -29,7 +28,7 @@
     }
 
     .navbar-custom .nav-link {
-        color: #e7ecec !important;
+        color: #0f172a !important;
         font-weight: 500;
     }
 
@@ -111,12 +110,10 @@
     </style>
 </head>
 <body>
-    {{-- // Navbar HANYA MUNCUL jika user sudah login DAN sedang tidak di halaman utama/login --}}
     @auth
-        @if(!request()->routeIs('welcome') && !request()->routeIs('login') && !request()->request->has('home'))
+        @if(!request()->routeIs('welcome') && !request()->routeIs('login'))
         <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
             <div class="container">
-                {{-- // Judul Brand Dinamis Sesuai Role --}}
                 <a class="navbar-brand" href="{{ route('dashboard') }}">
                     {{ Auth::user()->role === 'admin' ? 'Aplikasi Sertifikasi JWD Sayyidah' : 'Aplikasi Sertifikasi' }}
                 </a>
@@ -124,21 +121,30 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    {{-- // Menu Utama di Tengah/Kiri --}}
                     <ul class="navbar-nav me-auto ms-lg-4">
                         <li class="nav-item">
                             <a class="nav-link px-3" href="{{ route('dashboard') }}">Dashboard</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3" href="{{ route('skema.index') }}">Data Skema</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3" href="{{ route('peserta.index') }}">Data Peserta</a>
-                        </li>
+
+                        @if(Auth::user()->role === 'admin')
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="{{ route('skema.index') }}">Data Skema</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="{{ route('peserta.index') }}">Data Peserta</a>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="{{ route('user.skema') }}">Data Skema</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="{{ route('user.peserta') }}">Data Peserta</a>
+                            </li>
+                        @endif
                     </ul>
 
-                    {{-- // Bagian Kanan: Label Role Dinamis dan Tombol Logout --}}
-                    <div class="d-flex align-items-center gap-3">
+                    {{-- Ditambahkan ms-auto agar elemen ini terdorong mentok ke kanan --}}
+                    <div class="d-flex align-items-center gap-3 ms-auto">
                         <span class="fw-bold text-dark px-3 py-1 rounded" style="background-color: rgba(255, 255, 255, 0.4); font-size: 14px;">
                             {{ Auth::user()->role === 'admin' ? 'Administrator' : 'User' }}
                         </span>
@@ -153,9 +159,7 @@
         @endif
     @endauth
 
-    {{-- // Container utama untuk menampung konten halaman dan flash message --}}
     <div class="container my-4 my-md-5">
-        {{-- // Pengecekan session flash success jika ada notifikasi berhasil --}}
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-sm mb-4" role="alert" style="background-color: #ecfdf5; color: #047857;">
                 <strong>Berhasil!</strong> {{ session('success') }}
@@ -163,11 +167,9 @@
             </div>
         @endif
 
-        {{-- // Menampilkan konten dinamis dari setiap view yang menggunakan layout ini --}}
         @yield('content')
     </div>
 
-    {{-- // Script JavaScript Bootstrap Bundle --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
